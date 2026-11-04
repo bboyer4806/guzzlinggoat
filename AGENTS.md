@@ -33,6 +33,8 @@ to an existing compatible Chromium (see `playwright.config.ts`).
   is its own route.
 - The brand colors are CSS custom properties in `src/app.css`. Use them rather than color values.
 - Static files, such as the logo, go in `static/`.
+- Site photos are in `static/photos/`: WebP, at most 1600 px wide and under 300 KB, named by number
+  and description (for example `25-bag-on-burlap.webp`). Pages pick from them.
 - `/healthz` answers 200 for Dokku's health check and the deploy's.
 
 ## Tests
