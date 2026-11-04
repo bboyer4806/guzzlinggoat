@@ -1,0 +1,138 @@
+name: Deploy
+
+# Checks the code, then builds on GitHub's runners, pushes the image to GHCR,
+# and has Dokku on the server run it. The Dokku app, its domain and its HTTPS
+# certificate are set up here too. The server limits which Dokku commands the
+# deploy key may run, so the app's ports are set once on the server instead
+# (`dokku ports:set guzzlinggoat http:80:3000 https:443:3000`). Only main
+# deploys: pull requests, and runs started by hand on another branch, only run
+# the checks.
+#
+# Each action is pinned to a full commit SHA, with its version in a comment, so
+# moving a tag can't change the code that runs here. Dependabot proposes new
+# versions as pull requests (.github/dependabot.yml).
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# One deploy at a time, in push order. A running deploy is never cancelled; a newer push
+# replaces one still waiting to start, so the latest commit is what goes live. Pull requests
+# and runs started by hand on another branch only run the checks, so each gets its own group.
+concurrency:
+  group: ${{ github.ref == 'refs/heads/main' && 'deploy' || github.run_id }}
+  cancel-in-progress: false
+
+env:
+  APP: guzzlinggoat
+  DOMAIN: guzzlinggoat.dev.boyersoftware.com
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: npm
+
+      # No dependency needs its install script (see the Dockerfile).
+      - run: npm ci --ignore-scripts
+      - run: npm run check
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
+
+  build:
+    needs: check
+    # Deploy needs this job, so only main deploys. A pull request runs on its
+    # merge ref, refs/pull/<number>/merge, so it stops after the checks too.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          push: true
+          # Tagged by commit so a rollback is naming an older tag, not a rebuild.
+          tags: |
+            ghcr.io/${{ github.repository }}:${{ github.sha }}
+            ghcr.io/${{ github.repository }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Kept apart from build and given no actions, so no action's code ever shares
+  # a runner with the deploy key: a job's runner only gets the secrets it uses.
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions: {}
+
+    steps:
+      - name: Deploy to Dokku
+        env:
+          SSH_KEY: ${{ secrets.DOKKU_SSH_KEY }}
+          HOST: ${{ secrets.DOKKU_HOST }}
+          IMAGE: ghcr.io/${{ github.repository }}:${{ github.sha }}
+        run: |
+          set -euo pipefail
+          : "${SSH_KEY:?Add the DOKKU_SSH_KEY secret under Settings > Secrets and variables > Actions}"
+          : "${HOST:?Add the DOKKU_HOST secret under Settings > Secrets and variables > Actions}"
+          mkdir -p ~/.ssh
+          # Delete the key when this step ends, even if it fails, so no later
+          # step can read it.
+          trap 'rm -f ~/.ssh/id_ed25519' EXIT
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          # The runner starts with no known hosts, so trust the key the
+          # server presents now.
+          ssh-keyscan -t ed25519 "$HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+          # Dokku runs exactly one command per SSH call. The server limits
+          # which commands this key may run (the projects-key-scope plugin in
+          # bboyer4806/dev).
+          dokku() { ssh -i ~/.ssh/id_ed25519 "dokku@$HOST" "$@"; }
+
+          dokku apps:exists "$APP" || dokku apps:create "$APP"
+          dokku domains:set "$APP" "$DOMAIN"
+
+          # Re-running a workflow deploys the same image again, which Dokku
+          # reports as "No changes detected" with a non-zero exit. Nothing
+          # failed, and the certificate step below still needs to run.
+          dokku git:from-image "$APP" "$IMAGE" 2>&1 | tee deploy.log \
+            || grep -q "No changes detected" deploy.log
+          # Dokku also says this when a deploy of this image was interrupted,
+          # and this key can't rebuild, so say what to do.
+          if grep -q "No changes detected" deploy.log; then
+            echo "::warning::Dokku already had this image, so nothing was redeployed. If the site isn't running it, run 'dokku ps:rebuild $APP' on the server."
+          fi
+
+          # Needs the DNS record in place. Checked first so a deploy never
+          # requests a certificate the app already has.
+          if [ "$(dokku letsencrypt:active "$APP")" != "true" ]; then
+            dokku letsencrypt:enable "$APP"
+          fi
+
+          # The site must answer over HTTPS. A missing port map or a broken
+          # proxy can leave a deploy that otherwise looks fine.
+          curl -fsS --retry 5 --retry-delay 5 --retry-all-errors "https://$DOMAIN/healthz"
