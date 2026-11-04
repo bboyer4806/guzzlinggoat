@@ -13,7 +13,9 @@
 </script>
 
 <header>
-	<a class="logo" href="/"><img src="/logo-badge.png" alt="Guzzling Goat" /></a>
+	<a class="logo" href="/">
+		<img src="/logo-badge.png" alt="Guzzling Goat Coffee" width="518" height="628" />
+	</a>
 	<nav>
 		<ul>
 			{#each links as { href, label } (href)}
@@ -44,16 +46,18 @@
 		background: var(--bg);
 	}
 
+	/* Tall enough for the badge's lettering to stay readable on a phone. */
 	.logo img {
 		display: block;
-		height: 5rem;
+		height: 7rem;
 		width: auto;
 	}
 
+	/* The negative margin lines the links' text up with the logo and the page edge. */
 	ul {
 		display: flex;
 		flex-wrap: wrap;
-		margin: 0;
+		margin: 0 -0.75rem;
 		padding: 0;
 		list-style: none;
 	}

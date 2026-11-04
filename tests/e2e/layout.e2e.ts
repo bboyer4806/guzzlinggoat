@@ -18,7 +18,7 @@ for (const width of [375, 768, 1280]) {
 			test(`${path} shows the header, logo, nav, footer and its heading`, async ({ page }) => {
 				await page.goto(path);
 				const header = page.getByRole('banner');
-				const logo = header.getByRole('link', { name: 'Guzzling Goat' }).getByRole('img');
+				const logo = header.getByRole('link', { name: 'Guzzling Goat Coffee' }).getByRole('img');
 				await expect(logo).toBeVisible();
 				// The image loaded, rather than showing as broken.
 				await expect
@@ -38,7 +38,7 @@ for (const width of [375, 768, 1280]) {
 
 test('the logo goes to the home page', async ({ page }) => {
 	await page.goto('/about');
-	await page.getByRole('banner').getByRole('link', { name: 'Guzzling Goat' }).click();
+	await page.getByRole('banner').getByRole('link', { name: 'Guzzling Goat Coffee' }).click();
 	await expect(page).toHaveURL('/');
 	await expect(page.getByRole('heading', { level: 1, name: 'Home', exact: true })).toBeVisible();
 });
