@@ -32,9 +32,12 @@ to an existing compatible Chromium (see `playwright.config.ts`).
 - `src/routes/+layout.svelte` holds the header, nav and footer that every page shares. Each page
   is its own route.
 - The brand colors are CSS custom properties in `src/app.css`. Use them rather than color values.
-- Static files, such as the logo, go in `static/`.
+- Static files, such as the logo, go in `static/`. `src/app.html` links the favicon and
+  apple-touch-icon, both made from the logo badge.
 - Site photos are in `static/photos/`: WebP, at most 1600 px wide and under 300 KB, named by number
   and description (for example `25-bag-on-burlap.webp`). Pages pick from them.
+- Pages load nothing from the old WordPress site or its hosting (guzzlinggoat.com, mybluehost.me,
+  wp.com).
 - `/healthz` answers 200 for Dokku's health check and the deploy's.
 
 ## Tests
