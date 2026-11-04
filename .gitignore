@@ -1,0 +1,15 @@
+node_modules
+
+# Output
+/.svelte-kit
+/build
+
+# Vite
+vite.config.ts.timestamp-*
+
+# Playwright
+/test-results
+/playwright-report
+
+# OS
+.DS_Store
