@@ -43,6 +43,33 @@ test('the logo goes to the home page', async ({ page }) => {
 	await expect(page.getByRole('heading', { level: 1, name: 'Home', exact: true })).toBeVisible();
 });
 
+// Every page links the favicon and apple-touch-icon from src/app.html, and loads nothing from the
+// old WordPress site or its hosting (GGW-3).
+
+const OLD_HOSTS = ['guzzlinggoat.com', 'mybluehost.me', 'wp.com'];
+
+for (const { path } of PAGES) {
+	test(`${path} links a favicon and apple-touch-icon that load`, async ({ page, request }) => {
+		await page.goto(path);
+		for (const rel of ['icon', 'apple-touch-icon']) {
+			const link = page.locator(`head link[rel="${rel}"]`);
+			const href = await link.evaluate((el: HTMLLinkElement) => el.href);
+			expect((await request.get(href)).status(), rel).toBe(200);
+		}
+	});
+
+	test(`${path} loads nothing from the old WordPress hosting`, async ({ page }) => {
+		const hosts: string[] = [];
+		page.on('request', (request) => hosts.push(new URL(request.url()).hostname));
+		// Waits until the page stops making requests, not just for its first load.
+		await page.goto(path, { waitUntil: 'networkidle' });
+		const old = hosts.filter((host) =>
+			OLD_HOSTS.some((oldHost) => host === oldHost || host.endsWith(`.${oldHost}`))
+		);
+		expect(old).toEqual([]);
+	});
+}
+
 /** How much wider the page is than the window: anything over 0 scrolls sideways. */
 function sidewaysOverflow(page: Page) {
 	return page.evaluate(
