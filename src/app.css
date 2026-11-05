@@ -1,8 +1,18 @@
-/* The brand colors, defined only here. */
+/* The palette and type, defined only here. /design shows them. */
 :root {
+	/* GGW-1's brand colors. */
 	--brand: #b37602;
 	--text: #000000;
 	--bg: #ffffff;
+	/* Built on them: espresso and red come from the logo badge, and cream is the brand gold at 12%
+	   on white. White text on espresso is 18:1, black on cream 18:1, and red on white 5.6:1. */
+	--espresso: #241007;
+	--cream: #f6efe1;
+	--error: #cb211e;
+
+	/* Self-hosted by the @fontsource-variable packages that src/routes/+layout.svelte imports. */
+	--font-heading: 'Rokkitt Variable', serif;
+	--font-body: 'Source Sans 3 Variable', sans-serif;
 }
 
 *,
@@ -15,15 +25,129 @@ body {
 	margin: 0;
 	background: var(--bg);
 	color: var(--text);
-	font: 1rem/1.5 system-ui, sans-serif;
+	font: 1.0625rem/1.6 var(--font-body);
+}
+
+h1,
+h2,
+h3 {
+	font-family: var(--font-heading);
+	line-height: 1.1;
+	text-wrap: balance;
+}
+
+h1 {
+	font-size: clamp(2.25rem, 1.75rem + 2.5vw, 3.5rem);
+	font-weight: 800;
+}
+
+h2 {
+	font-size: clamp(1.75rem, 1.5rem + 1.25vw, 2.5rem);
+	font-weight: 800;
 }
 
 a {
 	color: var(--brand);
 }
 
-/* Black text on the brand color is 5.5:1; white would be 3.8:1, under WCAG AA's 4.5:1. */
-button {
+/* Black text on the brand color is 5.5:1; white would be 3.8:1, under WCAG AA's 4.5:1. The button
+   class makes a link look like a button, and secondary outlines it instead of filling it. */
+button,
+.button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 48px;
+	padding: 0.5rem 1.5rem;
+	border: 2px solid var(--brand);
+	border-radius: 0.25rem;
 	background: var(--brand);
 	color: var(--text);
+	font: 700 1.0625rem/1.2 var(--font-body);
+	text-align: center;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+button:hover,
+.button:hover {
+	background: var(--bg);
+}
+
+.button.secondary {
+	background: none;
+	color: inherit;
+}
+
+.button.secondary:hover {
+	background: var(--brand);
+	color: var(--text);
+}
+
+/* Each label holds its field, so the field needs no id. */
+label {
+	display: block;
+	font-weight: 600;
+}
+
+input,
+textarea {
+	display: block;
+	width: 100%;
+	margin-top: 0.25rem;
+	padding: 0.625rem 0.75rem;
+	border: 1px solid var(--espresso);
+	border-radius: 0.25rem;
+	background: var(--bg);
+	color: var(--text);
+	font: inherit;
+	font-weight: 400;
+}
+
+textarea {
+	min-height: 9rem;
+	resize: vertical;
+}
+
+/* Page layout. A section is at most 80rem wide and centered. A panel gives it padding and a cream or
+   espresso background. A split puts its two children side by side from 48rem up. */
+.section {
+	max-width: 80rem;
+	margin: 0 auto 2.5rem;
+}
+
+.panel {
+	padding: 2rem 1.25rem;
+	border-radius: 0.5rem;
+}
+
+.cream {
+	background: var(--cream);
+}
+
+.espresso {
+	background: var(--espresso);
+	color: var(--bg);
+}
+
+/* Photos fill their column. Pages set the shape with aspect-ratio, and the photo is cropped to it. */
+.photo {
+	display: block;
+	width: 100%;
+	height: auto;
+	object-fit: cover;
+	border-radius: 0.5rem;
+}
+
+@media (min-width: 48rem) {
+	.panel {
+		padding: 3rem;
+	}
+
+	.split {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 3rem;
+		align-items: center;
+	}
 }
