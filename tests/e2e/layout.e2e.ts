@@ -1,4 +1,5 @@
-import { expect, test, type Page } from '@playwright/test';
+import { expect, test } from '@playwright/test';
+import { oldHostsRequested, sidewaysOverflow } from './helpers';
 
 // Every page shows the header, nav and footer from src/routes/+layout.svelte (GGW-1).
 
@@ -46,8 +47,6 @@ test('the logo goes to the home page', async ({ page }) => {
 // Every page links the favicon and apple-touch-icon from src/app.html, and loads nothing from the
 // old WordPress site or its hosting (GGW-3).
 
-const OLD_HOSTS = ['guzzlinggoat.com', 'mybluehost.me', 'wp.com'];
-
 for (const { path } of PAGES) {
 	test(`${path} links a favicon and apple-touch-icon that load`, async ({ page, request }) => {
 		await page.goto(path);
@@ -59,20 +58,6 @@ for (const { path } of PAGES) {
 	});
 
 	test(`${path} loads nothing from the old WordPress hosting`, async ({ page }) => {
-		const hosts: string[] = [];
-		page.on('request', (request) => hosts.push(new URL(request.url()).hostname));
-		// Waits until the page stops making requests, not just for its first load.
-		await page.goto(path, { waitUntil: 'networkidle' });
-		const old = hosts.filter((host) =>
-			OLD_HOSTS.some((oldHost) => host === oldHost || host.endsWith(`.${oldHost}`))
-		);
-		expect(old).toEqual([]);
+		expect(await oldHostsRequested(page, path)).toEqual([]);
 	});
-}
-
-/** How much wider the page is than the window: anything over 0 scrolls sideways. */
-function sidewaysOverflow(page: Page) {
-	return page.evaluate(
-		() => document.documentElement.scrollWidth - document.documentElement.clientWidth
-	);
 }
