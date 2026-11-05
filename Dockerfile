@@ -1,5 +1,5 @@
 # Build: install everything and build the app. No secrets are needed here.
-FROM node:24-slim AS build
+FROM node:26-slim AS build
 WORKDIR /app
 COPY package.json package-lock.json .npmrc ./
 # Dependencies don't need install scripts: esbuild and Rolldown install their binaries as regular
@@ -10,7 +10,7 @@ RUN npm run build && npm prune --omit=dev
 
 # Run: production dependencies, the built app and app.json (Dokku reads its health check from
 # there).
-FROM node:24-slim
+FROM node:26-slim
 WORKDIR /app
 ENV NODE_ENV=production
 # Form email goes through Resend (src/lib/server/email.ts). Tests and `npm run dev` send to a local
