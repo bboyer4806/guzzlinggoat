@@ -32,7 +32,13 @@ to an existing compatible Chromium (see `playwright.config.ts`).
 
 - `src/routes/+layout.svelte` holds the header, nav and footer that every page shares. Each page
   is its own route.
-- The brand colors are CSS custom properties in `src/app.css`. Use them rather than color values.
+- `src/app.css` holds the palette (the brand colors plus espresso, cream and red) and the two
+  fonts as CSS custom properties, and the button, form and page layout styles every page shares.
+  Use the custom properties rather than color values or font names.
+- The fonts are self-hosted: `src/routes/+layout.svelte` imports their `@fontsource-variable`
+  packages.
+- `/design` shows the palette and type and links to a mockup of each page, all under
+  `src/routes/design/`. The nav doesn't link to it.
 - Static files, such as the logo, go in `static/`. `src/app.html` links the favicon and
   apple-touch-icon, both made from the logo badge.
 - Site photos are in `static/photos/`: WebP, at most 1600 px wide and under 300 KB, named by number
@@ -60,7 +66,7 @@ set to the submitter.
 ## Tests
 
 Tests are `tests/e2e/*.e2e.ts`, run by Playwright: browser tests, plus `email.e2e.ts`, which calls
-the email path directly.
+the email path directly. Helpers they share are in `tests/e2e/helpers.ts`.
 
 ## Workflow
 
