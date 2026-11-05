@@ -6,8 +6,12 @@
 	"engines": {
 		"node": ">=22.17"
 	},
+	"imports": {
+		"#lib/*": "./src/lib/*"
+	},
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "RESEND_BASE_URL=http://localhost:4010 RESEND_API_KEY=stub vite dev",
+		"stub": "node scripts/resend-stub.mjs 4010",
 		"build": "vite build",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
