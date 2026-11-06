@@ -30,11 +30,13 @@ to an existing compatible Chromium (see `playwright.config.ts`).
 
 ## Code
 
-- `src/routes/+layout.svelte` holds the header, nav and footer that every page shares. Each page
-  is its own route.
-- `src/app.css` holds the palette (the brand colors plus espresso, cream and red) and the two
+- `src/routes/+layout.svelte` holds what every page shares: the announcement bar, the header (the
+  logo, and the nav with Wholesale as its button), the badge pattern (`src/lib/Pattern.svelte`) and
+  the footer. Each page is its own route.
+- `src/app.css` holds the palette (the brand colors plus espresso, cream, red and teal) and the two
   fonts as CSS custom properties, and the button, form and page layout styles every page shares.
-  Use the custom properties rather than color values or font names.
+  Use the custom properties rather than color values or font names. A page is a stack of `band`s,
+  each running edge to edge, with its content in a `wrap`.
 - The fonts are self-hosted: `src/routes/+layout.svelte` imports their `@fontsource-variable`
   packages.
 - `/design` shows the palette and type and links to a mockup of each page, all under
@@ -42,7 +44,9 @@ to an existing compatible Chromium (see `playwright.config.ts`).
 - Static files, such as the logo, go in `static/`. `src/app.html` links the favicon and
   apple-touch-icon, both made from the logo badge.
 - Site photos are in `static/photos/`: WebP, at most 1600 px wide and under 300 KB, named by number
-  and description (for example `25-bag-on-burlap.webp`). Pages pick from them.
+  and description (for example `25-bag-on-burlap.webp`). Pages pick from them. 25 and 27 also have
+  `-large` versions made from their originals (wider than 1600 px, under 1 MB) for full-width
+  photos on wide screens. Pages offer them through `srcset`, so phones load the smaller files.
 - Pages load nothing from the old WordPress site or its hosting (guzzlinggoat.com, mybluehost.me,
   wp.com).
 - `/healthz` answers 200 for Dokku's health check and the deploy's.
