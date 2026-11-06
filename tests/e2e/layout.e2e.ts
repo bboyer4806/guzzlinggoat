@@ -3,19 +3,20 @@ import { oldHostsRequested, sidewaysOverflow } from './helpers';
 
 // Every page shows the header, nav and footer from src/routes/+layout.svelte (GGW-1).
 
+// Each page's name in the nav, and its h1.
 const PAGES = [
-	{ path: '/', name: 'Home' },
-	{ path: '/about', name: 'About' },
-	{ path: '/shop', name: 'Shop' },
-	{ path: '/wholesale', name: 'Wholesale' },
-	{ path: '/contact', name: 'Contact' }
+	{ path: '/', name: 'Home', heading: 'Experience Pure Ethiopian Coffee' },
+	{ path: '/about', name: 'About', heading: 'About' },
+	{ path: '/shop', name: 'Shop', heading: 'Shop' },
+	{ path: '/wholesale', name: 'Wholesale', heading: 'Wholesale' },
+	{ path: '/contact', name: 'Contact', heading: 'Contact' }
 ];
 
 for (const width of [375, 768, 1280]) {
 	test.describe(`at ${width}px wide`, () => {
 		test.use({ viewport: { width, height: 800 } });
 
-		for (const { path, name } of PAGES) {
+		for (const { path, heading } of PAGES) {
 			test(`${path} shows the header, logo, nav, footer and its heading`, async ({ page }) => {
 				await page.goto(path);
 				const header = page.getByRole('banner');
@@ -30,7 +31,9 @@ for (const width of [375, 768, 1280]) {
 					await expect(nav.getByRole('link', { name: link.name, exact: true })).toBeVisible();
 				}
 				await expect(page.getByRole('contentinfo')).toBeVisible();
-				await expect(page.getByRole('heading', { level: 1, name, exact: true })).toBeVisible();
+				await expect(
+					page.getByRole('heading', { level: 1, name: heading, exact: true })
+				).toBeVisible();
 				expect(await sidewaysOverflow(page)).toBe(0);
 			});
 		}
@@ -41,7 +44,9 @@ test('the logo goes to the home page', async ({ page }) => {
 	await page.goto('/about');
 	await page.getByRole('banner').getByRole('link', { name: 'Guzzling Goat Coffee' }).click();
 	await expect(page).toHaveURL('/');
-	await expect(page.getByRole('heading', { level: 1, name: 'Home', exact: true })).toBeVisible();
+	await expect(
+		page.getByRole('heading', { level: 1, name: 'Experience Pure Ethiopian Coffee', exact: true })
+	).toBeVisible();
 });
 
 // Every page links the favicon and apple-touch-icon from src/app.html, and loads nothing from the

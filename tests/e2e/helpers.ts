@@ -18,7 +18,9 @@ export async function oldHostsRequested(page: Page, path: string) {
 
 /** How much wider the page is than the window: anything over 0 scrolls sideways. */
 export function sidewaysOverflow(page: Page) {
-	return page.evaluate(
-		() => document.documentElement.scrollWidth - document.documentElement.clientWidth
-	);
+	return page.evaluate(async () => {
+		// Text gets wider or narrower when the fonts arrive, so measure after they have.
+		await document.fonts.ready;
+		return document.documentElement.scrollWidth - document.documentElement.clientWidth;
+	});
 }
