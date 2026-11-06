@@ -3,10 +3,15 @@ import { oldHostsRequested, sidewaysOverflow } from './helpers';
 
 // Every page shows the header, nav and footer from src/routes/+layout.svelte (GGW-1).
 
+// heading is the page's h1, when that isn't its name in the nav.
 const PAGES = [
 	{ path: '/', name: 'Home' },
 	{ path: '/about', name: 'About' },
-	{ path: '/shop', name: 'Shop' },
+	{
+		path: '/shop',
+		name: 'Shop',
+		heading: 'Guzzling Goat Whole Bean Medium Roast Ethiopian Coffee'
+	},
 	{ path: '/wholesale', name: 'Wholesale' },
 	{ path: '/contact', name: 'Contact' }
 ];
@@ -15,7 +20,7 @@ for (const width of [375, 768, 1280]) {
 	test.describe(`at ${width}px wide`, () => {
 		test.use({ viewport: { width, height: 800 } });
 
-		for (const { path, name } of PAGES) {
+		for (const { path, name, heading = name } of PAGES) {
 			test(`${path} shows the header, logo, nav, footer and its heading`, async ({ page }) => {
 				await page.goto(path);
 				const header = page.getByRole('banner');
@@ -30,7 +35,13 @@ for (const width of [375, 768, 1280]) {
 					await expect(nav.getByRole('link', { name: link.name, exact: true })).toBeVisible();
 				}
 				await expect(page.getByRole('contentinfo')).toBeVisible();
-				await expect(page.getByRole('heading', { level: 1, name, exact: true })).toBeVisible();
+				await expect(
+					page.getByRole('heading', { level: 1, name: heading, exact: true })
+				).toBeVisible();
+				// Text gets wider or narrower when the fonts arrive, so measure after they have.
+				await page.evaluate(async () => {
+					await document.fonts.ready;
+				});
 				expect(await sidewaysOverflow(page)).toBe(0);
 			});
 		}
