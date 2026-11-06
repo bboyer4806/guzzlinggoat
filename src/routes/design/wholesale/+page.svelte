@@ -2,95 +2,162 @@
 	<title>Wholesale mockup · Guzzling Goat</title>
 </svelte:head>
 
-<section class="section split intro">
-	<div>
-		<h1>Wholesale</h1>
-		<p class="subtitle">Serve coffee that's roasted where it's grown.</p>
-		<p>
-			Most coffee is shipped green and roasted in the United States. Guzzling Goat is 100% Arabica,
-			grown and roasted in Ethiopia, the homeland of coffee, and hand selected by a local expert.
-			Your customers get a full-bodied mocha flavor with a story worth telling.
-		</p>
-		<a class="button" href="#inquiry">Send an inquiry</a>
+<section class="band espresso">
+	<div class="wrap split">
+		<div>
+			<p class="eyebrow">For your business</p>
+			<h1>Wholesale</h1>
+			<p class="subtitle">Serve coffee that's roasted where it's grown.</p>
+			<p class="lead">
+				Most coffee is shipped green and roasted in the United States. Guzzling Goat is 100%
+				Arabica, grown and roasted in Ethiopia, the homeland of coffee, and hand selected by a local
+				expert. Your customers get a full-bodied mocha flavor with a story worth telling.
+			</p>
+			<a class="button" href="#inquiry">Send an inquiry</a>
+		</div>
+		<img
+			class="photo"
+			src="/photos/22-green-coffee-sacks.webp"
+			alt="Sacks of Ethiopian green coffee stacked in a warehouse"
+			width="960"
+			height="1280"
+			fetchpriority="high"
+		/>
 	</div>
-	<img
-		class="photo"
-		src="/photos/22-green-coffee-sacks.webp"
-		alt="Sacks of Ethiopian green coffee stacked in a warehouse"
-		width="960"
-		height="1280"
-	/>
 </section>
 
-<section class="section">
-	<h2>Who we work with</h2>
-	<ul class="clients">
-		<li>Cafes and coffee shops</li>
-		<li>Restaurants</li>
-		<li>Offices</li>
-		<li>Retailers</li>
-	</ul>
+<section class="band cream">
+	<div class="wrap">
+		<h2>Who we work with</h2>
+		<ul class="clients">
+			<li><span class="number">01</span>Cafes and coffee shops</li>
+			<li><span class="number">02</span>Restaurants</li>
+			<li><span class="number">03</span>Offices</li>
+			<li><span class="number">04</span>Retailers</li>
+		</ul>
+	</div>
 </section>
 
-<section class="section panel cream split inquiry" id="inquiry">
-	<div>
-		<h2>Let's talk</h2>
-		<p>
-			Tell us about your business and what you're looking for. We'll reply by email with options
-			and pricing.
-		</p>
+<section class="band">
+	<div class="wrap">
+		<p class="eyebrow">Why Guzzling Goat</p>
+		<h2>A coffee with a story worth telling</h2>
+		<ul class="reasons">
+			<li>
+				<img
+					class="photo"
+					src="/photos/27-traditional-roasting-pan.webp"
+					alt="Coffee beans roasting in a traditional pan"
+					width="1600"
+					height="2125"
+					loading="lazy"
+				/>
+				<h3>Roasted where it's grown</h3>
+			</li>
+			<li>
+				<img
+					class="photo"
+					src="/photos/16-green-beans-glass-bowl.webp"
+					alt="A glass bowl of green coffee beans"
+					width="750"
+					height="1000"
+					loading="lazy"
+				/>
+				<h3>100% Arabica, hand selected</h3>
+			</li>
+			<li>
+				<img
+					class="photo"
+					src="/photos/13-cupping-table.webp"
+					alt="Cups and bowls of coffee set out on a table for tasting"
+					width="1000"
+					height="450"
+					loading="lazy"
+				/>
+				<h3>A full-bodied mocha flavor</h3>
+			</li>
+		</ul>
 	</div>
-	<!-- A mockup: submitting does nothing. GGW-7 adds the form action. -->
-	<form onsubmit={(event) => event.preventDefault()}>
-		<label>Name <input name="name" autocomplete="name" required /></label>
-		<label>Business name <input name="business" autocomplete="organization" required /></label>
-		<label>Business type <input name="businessType" required /></label>
-		<label>Email <input type="email" name="email" autocomplete="email" required /></label>
-		<label>Message <textarea name="message" required></textarea></label>
-		<button>Send inquiry</button>
-	</form>
+</section>
+
+<section class="band espresso" id="inquiry">
+	<div class="wrap split inquiry">
+		<div>
+			<p class="eyebrow">Send an inquiry</p>
+			<h2>Let's talk</h2>
+			<p class="lead">
+				Tell us about your business and what you're looking for. We'll reply by email with options
+				and pricing.
+			</p>
+		</div>
+		<!-- A mockup: submitting does nothing. GGW-7 adds the form action. -->
+		<form onsubmit={(event) => event.preventDefault()}>
+			<label>Name <input name="name" autocomplete="name" required /></label>
+			<label>Business name <input name="business" autocomplete="organization" required /></label>
+			<label>Business type <input name="businessType" required /></label>
+			<label>Email <input type="email" name="email" autocomplete="email" required /></label>
+			<label>Message <textarea name="message" required></textarea></label>
+			<button>Send inquiry</button>
+		</form>
+	</div>
 </section>
 
 <style>
-	h1,
-	h2,
-	p {
-		margin: 0 0 1rem;
-	}
-
-	.intro {
-		padding-top: 1rem;
-	}
-
-	.intro .photo {
-		aspect-ratio: 1;
-		margin-top: 1.5rem;
-	}
-
 	.subtitle {
-		font: 800 1.5rem/1.2 var(--font-heading);
+		font: 800 clamp(1.5rem, 1.2rem + 1.2vw, 2.25rem) / 1.15 var(--font-heading);
+	}
+
+	.split .photo {
+		aspect-ratio: 4 / 5;
+		margin-top: 2.5rem;
 	}
 
 	.clients {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 0.75rem;
+		gap: 1rem;
 		margin: 0;
 		padding: 0;
 		list-style: none;
 	}
 
 	.clients li {
-		padding: 1rem;
-		border-left: 4px solid var(--brand);
-		background: var(--cream);
-		font: 700 1.25rem/1.2 var(--font-heading);
+		padding: 1.5rem;
+		border-top: 4px solid var(--brand);
+		background: var(--bg);
+		font: 800 1.5rem/1.2 var(--font-heading);
 	}
 
+	.number {
+		display: block;
+		margin-bottom: 0.5rem;
+		color: var(--brand);
+		font-size: 2.75rem;
+		line-height: 1;
+	}
+
+	.reasons {
+		display: grid;
+		gap: 2.5rem;
+		margin: 2.5rem 0 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.reasons .photo {
+		aspect-ratio: 4 / 3;
+		margin-bottom: 1.25rem;
+	}
+
+	/* The form sits on a cream card, so its fields read as they would on any page. */
 	form {
 		display: grid;
-		gap: 1rem;
+		gap: 1.25rem;
 		justify-items: start;
+		margin-top: 2rem;
+		padding: clamp(1.5rem, 4vw, 2.5rem);
+		border-radius: 0.25rem;
+		background: var(--cream);
+		color: var(--text);
 	}
 
 	form label {
@@ -98,12 +165,17 @@
 	}
 
 	@media (min-width: 48rem) {
-		.intro .photo {
+		.split .photo,
+		form {
 			margin-top: 0;
 		}
 
 		.clients {
 			grid-template-columns: repeat(4, 1fr);
+		}
+
+		.reasons {
+			grid-template-columns: repeat(3, 1fr);
 		}
 
 		.inquiry {

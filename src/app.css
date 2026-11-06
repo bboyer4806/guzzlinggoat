@@ -1,18 +1,23 @@
-/* The palette and type, defined only here. /design shows them. */
+/* The palette, type and the styles every page shares, defined only here. /design shows them. */
 :root {
 	/* GGW-1's brand colors. */
 	--brand: #b37602;
 	--text: #000000;
 	--bg: #ffffff;
-	/* Built on them: espresso and red come from the logo badge, and cream is the brand gold at 12%
-	   on white. White text on espresso is 18:1, black on cream 18:1, and red on white 5.6:1. */
+	/* Built on them: espresso, red and teal come from the logo badge, and cream is the brand gold at
+	   12% on white. White on espresso is 18:1, gold on espresso 4.8:1, black on cream 18:1 and red on
+	   white 5.6:1. Teal is 2:1 on white, so it's only for the badge pattern, never for text. */
 	--espresso: #241007;
 	--cream: #f6efe1;
-	--error: #cb211e;
+	--red: #cb211e;
+	--teal: #1cc8ac;
 
 	/* Self-hosted by the @fontsource-variable packages that src/routes/+layout.svelte imports. */
 	--font-heading: 'Rokkitt Variable', serif;
 	--font-body: 'Source Sans 3 Variable', sans-serif;
+
+	/* The space between the edge of the window and the page's content. */
+	--gutter: clamp(1rem, 4vw, 3rem);
 }
 
 *,
@@ -25,29 +30,97 @@ body {
 	margin: 0;
 	background: var(--bg);
 	color: var(--text);
-	font: 1.0625rem/1.6 var(--font-body);
+	font: 1.0625rem/1.65 var(--font-body);
 }
 
 h1,
 h2,
 h3 {
+	margin: 0 0 1rem;
 	font-family: var(--font-heading);
-	line-height: 1.1;
+	font-weight: 800;
+	line-height: 1.05;
 	text-wrap: balance;
 }
 
 h1 {
-	font-size: clamp(2.25rem, 1.75rem + 2.5vw, 3.5rem);
-	font-weight: 800;
+	font-size: clamp(2.5rem, 1.6rem + 4vw, 4.75rem);
 }
 
 h2 {
-	font-size: clamp(1.75rem, 1.5rem + 1.25vw, 2.5rem);
-	font-weight: 800;
+	font-size: clamp(2rem, 1.5rem + 2.2vw, 3.25rem);
+}
+
+h3 {
+	font-size: clamp(1.375rem, 1.2rem + 0.6vw, 1.75rem);
+	font-weight: 700;
+}
+
+p {
+	margin: 0 0 1rem;
 }
 
 a {
 	color: var(--brand);
+}
+
+figure {
+	margin: 0;
+}
+
+figcaption {
+	margin-top: 0.75rem;
+	font-size: 0.875rem;
+}
+
+/* A short label above a heading, led by a gold rule. */
+.eyebrow {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	margin: 0 0 1.25rem;
+	font: 700 0.8125rem/1.3 var(--font-body);
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+}
+
+.eyebrow::before {
+	content: '';
+	flex: none;
+	width: 2rem;
+	height: 2px;
+	background: var(--brand);
+}
+
+.lead {
+	font-size: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
+}
+
+/* A list whose items are marked with gold squares, like the ones on the logo badge. */
+.squares {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.75rem 2rem;
+	margin: 0 0 2rem;
+	padding: 0;
+	list-style: none;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.squares li {
+	display: flex;
+	align-items: center;
+	gap: 0.625rem;
+}
+
+.squares li::before {
+	content: '';
+	flex: none;
+	width: 0.625rem;
+	height: 0.625rem;
+	border: 2px solid var(--brand);
 }
 
 /* Black text on the brand color is 5.5:1; white would be 3.8:1, under WCAG AA's 4.5:1. The button
@@ -94,8 +167,8 @@ input,
 textarea {
 	display: block;
 	width: 100%;
-	margin-top: 0.25rem;
-	padding: 0.625rem 0.75rem;
+	margin-top: 0.375rem;
+	padding: 0.75rem;
 	border: 1px solid var(--espresso);
 	border-radius: 0.25rem;
 	background: var(--bg);
@@ -109,16 +182,17 @@ textarea {
 	resize: vertical;
 }
 
-/* Page layout. A section is at most 80rem wide and centered. A panel gives it padding and a cream or
-   espresso background. A split puts its two children side by side from 48rem up. */
-.section {
-	max-width: 80rem;
-	margin: 0 auto 2.5rem;
+/* Page layout. main keeps content a gutter in from the window's edges. A band runs from edge to edge,
+   with a cream or espresso background if it has one, and wrap centers its content at most 80rem
+   wide. A split puts its two children side by side from 48rem up. */
+.band {
+	margin-inline: calc(-1 * var(--gutter));
+	padding: clamp(3.5rem, 8vw, 7rem) var(--gutter);
 }
 
-.panel {
-	padding: 2rem 1.25rem;
-	border-radius: 0.5rem;
+.wrap {
+	max-width: 80rem;
+	margin-inline: auto;
 }
 
 .cream {
@@ -136,18 +210,13 @@ textarea {
 	width: 100%;
 	height: auto;
 	object-fit: cover;
-	border-radius: 0.5rem;
 }
 
 @media (min-width: 48rem) {
-	.panel {
-		padding: 3rem;
-	}
-
 	.split {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
-		gap: 3rem;
+		gap: clamp(2.5rem, 6vw, 6rem);
 		align-items: center;
 	}
 }

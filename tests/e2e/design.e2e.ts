@@ -161,14 +161,46 @@ for (const path of DESIGN_PAGES) {
 	}) => {
 		expect(await oldHostsRequested(page, path)).toEqual([]);
 		const origin = new URL(page.url()).origin;
-		const sources = await page
-			.locator('img')
-			.evaluateAll((images: HTMLImageElement[]) => images.map((image) => image.src));
+		// Each image's src and every size its srcset offers.
+		const sources = await page.locator('img').evaluateAll((images: HTMLImageElement[]) =>
+			images.flatMap((image) => [
+				image.src,
+				...image.srcset
+					.split(',')
+					.filter((candidate) => candidate.trim())
+					.map((candidate) => new URL(candidate.trim().split(/\s+/)[0]!, image.baseURI).href)
+			])
+		);
 		expect(sources.length).toBeGreaterThan(0);
 		for (const source of sources) {
 			expect(new URL(source).origin, source).toBe(origin);
 			expect((await request.get(source)).status(), source).toBe(200);
 		}
+	});
+}
+
+// The large versions of photos 25 and 27 are only for screens wide and dense enough to need them, so
+// phones load the smaller ones.
+for (const { viewport, deviceScaleFactor, large } of [
+	{ viewport: { width: 375, height: 667 }, deviceScaleFactor: 3, large: false },
+	{ viewport: { width: 1280, height: 800 }, deviceScaleFactor: 2, large: true }
+]) {
+	test.describe(`at ${viewport.width}px wide and ${deviceScaleFactor}x`, () => {
+		test.use({ viewport, deviceScaleFactor });
+
+		test(`the Home hero loads the ${large ? 'large' : '1600px'} roasting pan photo`, async ({
+			page
+		}) => {
+			await page.goto('/design/home');
+			const hero = page.getByRole('img', { name: 'Coffee beans roasting in a traditional pan' });
+			await expect
+				.poll(() => hero.evaluate((image: HTMLImageElement) => image.currentSrc))
+				.toMatch(
+					large
+						? /\/photos\/27-traditional-roasting-pan-large\.webp$/
+						: /\/photos\/27-traditional-roasting-pan\.webp$/
+				);
+		});
 	});
 }
 
