@@ -17,6 +17,8 @@ const COPY = [
 ];
 
 const THANKS = "Thanks! We'll be in touch soon.";
+const NOT_SENT = "Sorry, your inquiry didn't send. Please try again.";
+const INVALID_EMAIL = 'Enter a valid email address, like name@example.com';
 
 /** Each field's message when it's left empty, by label. */
 const EMPTY_ERRORS = {
@@ -100,9 +102,7 @@ test('an invalid email says to fix it and sends nothing', async ({ page }) => {
 	await page.goto('/wholesale');
 	const email = uniqueEmail().replace('@', '.');
 	await send(page, inquiry(email));
-	await expect(field(page, 'Email')).toHaveAccessibleDescription(
-		'Enter a valid email address, like name@example.com'
-	);
+	await expect(field(page, 'Email')).toHaveAccessibleDescription(INVALID_EMAIL);
 	await expect(field(page, 'Email')).toHaveAttribute('aria-invalid', 'true');
 	expect(await emailsFrom(email)).toEqual([]);
 });
@@ -141,12 +141,33 @@ test("when the email doesn't send, the page says so and keeps what the visitor t
 	// The stub refuses email that replies to this address.
 	const fields = inquiry('rejected@example.com');
 	await send(page, fields);
-	await expect(page.getByRole('alert')).toHaveText(
-		"Sorry, your inquiry didn't send. Please try again."
-	);
+	await expect(page.getByRole('alert')).toHaveText(NOT_SENT);
 	for (const [label, value] of Object.entries(fields)) {
 		await expect(field(page, label)).toHaveValue(value);
 	}
+});
+
+// A visitor who sends the form before the page's JavaScript loads gets a new page from the server,
+// which fills the form back in.
+test.describe('without JavaScript', () => {
+	test.use({ javaScriptEnabled: false });
+
+	test('a field error and a failed send both keep what the visitor typed', async ({ page }) => {
+		await page.goto('/wholesale');
+		const fields = inquiry('rejected.example.com');
+		await send(page, fields);
+		await expect(field(page, 'Email')).toHaveAccessibleDescription(INVALID_EMAIL);
+		for (const [label, value] of Object.entries(fields)) {
+			await expect(field(page, label)).toHaveValue(value);
+		}
+
+		// The stub refuses email that replies to this address.
+		await send(page, { Email: 'rejected@example.com' });
+		await expect(page.getByRole('alert')).toHaveText(NOT_SENT);
+		for (const [label, value] of Object.entries({ ...fields, Email: 'rejected@example.com' })) {
+			await expect(field(page, label)).toHaveValue(value);
+		}
+	});
 });
 
 test('an inquiry with the hidden honeypot field filled in sends nothing, but still thanks', async ({
