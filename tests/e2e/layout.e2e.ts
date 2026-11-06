@@ -31,6 +31,10 @@ for (const width of [375, 768, 1280]) {
 				}
 				await expect(page.getByRole('contentinfo')).toBeVisible();
 				await expect(page.getByRole('heading', { level: 1, name, exact: true })).toBeVisible();
+				// Text gets wider or narrower when the fonts arrive, so measure after they have.
+				await page.evaluate(async () => {
+					await document.fonts.ready;
+				});
 				expect(await sidewaysOverflow(page)).toBe(0);
 			});
 		}

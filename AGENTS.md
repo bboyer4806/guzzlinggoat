@@ -51,6 +51,14 @@ to an existing compatible Chromium (see `playwright.config.ts`).
   wp.com).
 - `/healthz` answers 200 for Dokku's health check and the deploy's.
 
+## Forms
+
+A form posts to the action in its page's `+page.server.ts`. The action checks the fields with a zod
+schema through `parseForm` from `src/lib/server/forms.ts`, whose `required` and `email` rules hold
+the messages that say what to fix, then emails them (see Email). The form has `novalidate`, so those
+messages are the only ones visitors see, and each field is a `src/lib/Field.svelte`, which shows its
+message under it.
+
 ## Email
 
 Forms email their submissions with `sendSubmission` from `src/lib/server/email.ts`: one email to
