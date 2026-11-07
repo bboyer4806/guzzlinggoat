@@ -3,10 +3,6 @@
 	import Legend from '#lib/Legend.svelte';
 </script>
 
-<svelte:head>
-	<title>Guzzling Goat</title>
-</svelte:head>
-
 <!-- The hero fills the screen with a photo, with the headline and the calls to action over it. -->
 <section class="band hero">
 	<img

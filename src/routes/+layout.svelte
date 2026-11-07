@@ -4,6 +4,7 @@
 	import '../app.css';
 	import { page } from '$app/state';
 	import Pattern from '#lib/Pattern.svelte';
+	import { PAGES, SHARE_IMAGE, siteUrl } from '#lib/site.ts';
 
 	let { children } = $props();
 
@@ -15,7 +16,22 @@
 		{ href: '/contact', label: 'Contact' },
 		{ href: '/wholesale', label: 'Wholesale' }
 	];
+
+	// The site's pages take their head tags from src/lib/site.ts. The design pages set their own
+	// titles.
+	const current = $derived(PAGES.find(({ path }) => path === page.url.pathname));
 </script>
+
+<svelte:head>
+	{#if current}
+		<title>{current.title}</title>
+		<meta name="description" content={current.description} />
+		<link rel="canonical" href={siteUrl(current.path)} />
+		<meta property="og:title" content={current.title} />
+		<meta property="og:description" content={current.description} />
+		<meta property="og:image" content={SHARE_IMAGE} />
+	{/if}
+</svelte:head>
 
 <p class="announce">
 	Grown and roasted in Ethiopia <span aria-hidden="true">·</span>

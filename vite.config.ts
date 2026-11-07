@@ -27,5 +27,8 @@ export default defineConfig({
 				}
 			}
 		})
-	]
+	],
+	// The tests ask the preview server for pages as guzzlinggoat.com, to check what search engines
+	// see there (GGW-10). Vite answers only to localhost unless told otherwise.
+	preview: { allowedHosts: ['guzzlinggoat.com'] }
 });

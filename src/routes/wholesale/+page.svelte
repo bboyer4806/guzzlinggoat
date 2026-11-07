@@ -7,10 +7,6 @@
 	let { form } = $props();
 </script>
 
-<svelte:head>
-	<title>Wholesale · Guzzling Goat</title>
-</svelte:head>
-
 <section class="band espresso">
 	<div class="wrap split">
 		<div>

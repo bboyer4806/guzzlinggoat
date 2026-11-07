@@ -3,10 +3,6 @@
 	import Legend from '#lib/Legend.svelte';
 </script>
 
-<svelte:head>
-	<title>About · Guzzling Goat</title>
-</svelte:head>
-
 <section class="band cream">
 	<div class="wrap split">
 		<div>
