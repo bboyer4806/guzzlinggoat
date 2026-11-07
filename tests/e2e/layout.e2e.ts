@@ -7,7 +7,11 @@ import { oldHostsRequested, sidewaysOverflow } from './helpers';
 const PAGES = [
 	{ path: '/', name: 'Home', heading: 'Experience Pure Ethiopian Coffee' },
 	{ path: '/about', name: 'About', heading: 'About' },
-	{ path: '/shop', name: 'Shop', heading: 'Shop' },
+	{
+		path: '/shop',
+		name: 'Shop',
+		heading: 'Guzzling Goat Whole Bean Medium Roast Ethiopian Coffee'
+	},
 	{ path: '/wholesale', name: 'Wholesale', heading: 'Wholesale' },
 	{ path: '/contact', name: 'Contact', heading: 'Contact' }
 ];
