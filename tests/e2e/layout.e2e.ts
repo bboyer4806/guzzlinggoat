@@ -6,7 +6,7 @@ import { oldHostsRequested, sidewaysOverflow } from './helpers';
 // Each page's name in the nav, and its h1.
 const PAGES = [
 	{ path: '/', name: 'Home', heading: 'Experience Pure Ethiopian Coffee' },
-	{ path: '/about', name: 'About', heading: 'About' },
+	{ path: '/about', name: 'About', heading: 'About Us' },
 	{ path: '/shop', name: 'Shop', heading: 'Shop' },
 	{ path: '/wholesale', name: 'Wholesale', heading: 'Wholesale' },
 	{ path: '/contact', name: 'Contact', heading: 'Contact' }
