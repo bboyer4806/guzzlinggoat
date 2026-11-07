@@ -59,7 +59,8 @@ A form posts to the action in its page's `+page.server.ts`. The action checks th
 schema through `parseForm` from `src/lib/server/forms.ts`, whose `required` and `email` rules hold
 the messages that say what to fix, then emails them (see Email). The form has `novalidate`, so those
 messages are the only ones visitors see, and each field is a `src/lib/Field.svelte`, which shows its
-message under it.
+message under it. `use:enhance={focusFirstError}` (`src/lib/focusFirstError.ts`) then moves the
+focus to the first field to fix.
 
 ## Email
 

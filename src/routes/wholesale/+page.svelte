@@ -1,21 +1,10 @@
 <script lang="ts">
-	import { tick } from 'svelte';
-	import { enhance, type SubmitFunction } from '$app/forms';
+	import { enhance } from '$app/forms';
 	import Field from '#lib/Field.svelte';
+	import { focusFirstError } from '#lib/focusFirstError.ts';
 	import Honeypot from '#lib/Honeypot.svelte';
 
 	let { form } = $props();
-
-	// The form leaves checking to its action (novalidate), so every message shows under its field in
-	// the same words. The first field to fix may be above the button the visitor pressed, so this
-	// takes them to it.
-	const focusFirstError: SubmitFunction =
-		() =>
-		async ({ formElement, update }) => {
-			await update();
-			await tick();
-			formElement.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
-		};
 </script>
 
 <svelte:head>

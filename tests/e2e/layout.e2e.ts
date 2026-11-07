@@ -13,7 +13,7 @@ const PAGES = [
 		heading: 'Guzzling Goat Whole Bean Medium Roast Ethiopian Coffee'
 	},
 	{ path: '/wholesale', name: 'Wholesale', heading: 'Wholesale' },
-	{ path: '/contact', name: 'Contact', heading: 'Contact' }
+	{ path: '/contact', name: 'Contact', heading: 'Contact Us' }
 ];
 
 for (const width of [375, 768, 1280]) {
