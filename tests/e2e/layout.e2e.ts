@@ -9,7 +9,7 @@ const PAGES = [
 	{ path: '/about', name: 'About', heading: 'About' },
 	{ path: '/shop', name: 'Shop', heading: 'Shop' },
 	{ path: '/wholesale', name: 'Wholesale', heading: 'Wholesale' },
-	{ path: '/contact', name: 'Contact', heading: 'Contact' }
+	{ path: '/contact', name: 'Contact', heading: 'Contact Us' }
 ];
 
 for (const width of [375, 768, 1280]) {
