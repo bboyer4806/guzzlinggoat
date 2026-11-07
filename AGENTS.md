@@ -33,8 +33,8 @@ to an existing compatible Chromium (see `playwright.config.ts`).
 - `src/routes/+layout.svelte` holds what every page shares: the announcement bar, the header (the
   logo, and the nav with Wholesale as its button), the badge pattern (`src/lib/Pattern.svelte`) and
   the footer. Each page is its own route.
-- A section that more than one page shows is a component in `src/lib/`, such as
-  `CallsToAction.svelte`, the Wholesale and Buy buttons.
+- A section or copy that more than one page shows is a component in `src/lib/`, such as
+  `CallsToAction.svelte`, the Wholesale and Buy buttons, and `Legend.svelte`, the goat legend.
 - `src/app.css` holds the palette (the brand colors plus espresso, cream, red and teal) and the two
   fonts as CSS custom properties, and the button, form and page layout styles every page shares.
   Use the custom properties rather than color values or font names. A page is a stack of `band`s,

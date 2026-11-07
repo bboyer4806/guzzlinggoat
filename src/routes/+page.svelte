@@ -1,5 +1,6 @@
 <script lang="ts">
 	import CallsToAction from '#lib/CallsToAction.svelte';
+	import Legend from '#lib/Legend.svelte';
 </script>
 
 <svelte:head>
@@ -154,12 +155,7 @@
 		<div>
 			<p class="eyebrow">How coffee was discovered</p>
 			<h2>Discover the Legend</h2>
-			<p class="lead">
-				Local Ethiopian legend tells the story of a goat farmer who was missing goats from his herd
-				during the day. These goats would return with a tremendous spring in their step. After
-				following these mischievous goats, he discovered that they were eating a strange bean from a
-				bush. He ate the beans himself, and coffee was discovered.
-			</p>
+			<Legend />
 		</div>
 		<img
 			class="photo"
