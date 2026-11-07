@@ -33,6 +33,8 @@ to an existing compatible Chromium (see `playwright.config.ts`).
 - `src/routes/+layout.svelte` holds what every page shares: the announcement bar, the header (the
   logo, and the nav with Wholesale as its button), the badge pattern (`src/lib/Pattern.svelte`) and
   the footer. Each page is its own route.
+- A section that more than one page shows is a component in `src/lib/`, such as
+  `CallsToAction.svelte`, the Wholesale and Buy buttons.
 - `src/app.css` holds the palette (the brand colors plus espresso, cream, red and teal) and the two
   fonts as CSS custom properties, and the button, form and page layout styles every page shares.
   Use the custom properties rather than color values or font names. A page is a stack of `band`s,
@@ -50,6 +52,14 @@ to an existing compatible Chromium (see `playwright.config.ts`).
 - Pages load nothing from the old WordPress site or its hosting (guzzlinggoat.com, mybluehost.me,
   wp.com).
 - `/healthz` answers 200 for Dokku's health check and the deploy's.
+
+## Forms
+
+A form posts to the action in its page's `+page.server.ts`. The action checks the fields with a zod
+schema through `parseForm` from `src/lib/server/forms.ts`, whose `required` and `email` rules hold
+the messages that say what to fix, then emails them (see Email). The form has `novalidate`, so those
+messages are the only ones visitors see, and each field is a `src/lib/Field.svelte`, which shows its
+message under it.
 
 ## Email
 

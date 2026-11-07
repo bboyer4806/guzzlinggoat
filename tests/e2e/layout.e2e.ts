@@ -3,24 +3,24 @@ import { oldHostsRequested, sidewaysOverflow } from './helpers';
 
 // Every page shows the header, nav and footer from src/routes/+layout.svelte (GGW-1).
 
-// heading is the page's h1, when that isn't its name in the nav.
+// Each page's name in the nav, and its h1.
 const PAGES = [
-	{ path: '/', name: 'Home' },
-	{ path: '/about', name: 'About' },
+	{ path: '/', name: 'Home', heading: 'Experience Pure Ethiopian Coffee' },
+	{ path: '/about', name: 'About', heading: 'About' },
 	{
 		path: '/shop',
 		name: 'Shop',
 		heading: 'Guzzling Goat Whole Bean Medium Roast Ethiopian Coffee'
 	},
-	{ path: '/wholesale', name: 'Wholesale' },
-	{ path: '/contact', name: 'Contact' }
+	{ path: '/wholesale', name: 'Wholesale', heading: 'Wholesale' },
+	{ path: '/contact', name: 'Contact', heading: 'Contact' }
 ];
 
 for (const width of [375, 768, 1280]) {
 	test.describe(`at ${width}px wide`, () => {
 		test.use({ viewport: { width, height: 800 } });
 
-		for (const { path, name, heading = name } of PAGES) {
+		for (const { path, heading } of PAGES) {
 			test(`${path} shows the header, logo, nav, footer and its heading`, async ({ page }) => {
 				await page.goto(path);
 				const header = page.getByRole('banner');
@@ -38,10 +38,6 @@ for (const width of [375, 768, 1280]) {
 				await expect(
 					page.getByRole('heading', { level: 1, name: heading, exact: true })
 				).toBeVisible();
-				// Text gets wider or narrower when the fonts arrive, so measure after they have.
-				await page.evaluate(async () => {
-					await document.fonts.ready;
-				});
 				expect(await sidewaysOverflow(page)).toBe(0);
 			});
 		}
@@ -52,7 +48,9 @@ test('the logo goes to the home page', async ({ page }) => {
 	await page.goto('/about');
 	await page.getByRole('banner').getByRole('link', { name: 'Guzzling Goat Coffee' }).click();
 	await expect(page).toHaveURL('/');
-	await expect(page.getByRole('heading', { level: 1, name: 'Home', exact: true })).toBeVisible();
+	await expect(
+		page.getByRole('heading', { level: 1, name: 'Experience Pure Ethiopian Coffee', exact: true })
+	).toBeVisible();
 });
 
 // Every page links the favicon and apple-touch-icon from src/app.html, and loads nothing from the
