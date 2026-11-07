@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { spawnSync } from 'node:child_process';
-import { randomUUID } from 'node:crypto';
 import { sendSubmission } from '../../src/lib/server/email.ts';
+import { emailsFrom, uniqueEmail } from './helpers';
 
 // The shared path that emails form submissions (GGW-9). These tests call it directly, and
 // playwright.config.ts points it at the Resend stub (scripts/resend-stub.mjs).
@@ -54,14 +54,3 @@ test('the built app refuses to start without RESEND_API_KEY', () => {
 	expect(stderr).toContain('RESEND_API_KEY is not set');
 	expect(status).toBe(1);
 });
-
-function uniqueEmail() {
-	return `${randomUUID()}@example.com`;
-}
-
-/** The emails the stub accepted from this submitter, oldest first. */
-async function emailsFrom(email: string) {
-	const response = await fetch(`${process.env.RESEND_BASE_URL}/emails`);
-	const emails: { reply_to: string }[] = await response.json();
-	return emails.filter((sent) => sent.reply_to === email);
-}

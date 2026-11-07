@@ -1,6 +1,7 @@
 import type { Page } from '@playwright/test';
+import { randomUUID } from 'node:crypto';
 
-// Shared by the browser tests.
+// Shared by the tests.
 
 /** The old WordPress site and its hosting, which no page loads anything from (GGW-3). */
 const OLD_HOSTS = ['guzzlinggoat.com', 'mybluehost.me', 'wp.com'];
@@ -23,4 +24,19 @@ export function sidewaysOverflow(page: Page) {
 		await document.fonts.ready;
 		return document.documentElement.scrollWidth - document.documentElement.clientWidth;
 	});
+}
+
+/** An email address no other test uses, so a test can find the emails it caused. */
+export function uniqueEmail() {
+	return `${randomUUID()}@example.com`;
+}
+
+/**
+ * The emails the Resend stub (scripts/resend-stub.mjs) accepted that reply to this address, oldest
+ * first. playwright.config.ts points form email at the stub.
+ */
+export async function emailsFrom(email: string) {
+	const response = await fetch(`${process.env.RESEND_BASE_URL}/emails`);
+	const emails: { reply_to: string }[] = await response.json();
+	return emails.filter((sent) => sent.reply_to === email);
 }
