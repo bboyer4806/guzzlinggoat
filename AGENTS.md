@@ -53,6 +53,21 @@ to an existing compatible Chromium (see `playwright.config.ts`).
   wp.com).
 - `/healthz` answers 200 for Dokku's health check and the deploy's.
 
+## Search engines
+
+Only guzzlinggoat.com, where the site will move (GGW-12), is indexed.
+
+- `src/lib/site.ts` holds each page's path, title and description. `src/routes/+layout.svelte`
+  gives the page its title, description, canonical link and link preview (`og:*`, with photo 25)
+  from there, and `/sitemap.xml` lists those pages, all at their guzzlinggoat.com addresses. A new
+  page adds a line there instead of setting its own title. The `/design` pages set their own.
+- On any host but guzzlinggoat.com, such as the dev site, `/robots.txt` disallows everything and
+  `src/hooks.server.ts` sends `X-Robots-Tag: noindex`, which it also sends on `/design` on every
+  host. Both check the request's host with `onSiteHost` from `src/lib/site.ts`. Tests ask for
+  guzzlinggoat.com with a `Host` header, which `vite.config.ts` lets the preview server answer.
+- `src/hooks.server.ts` redirects old WordPress URLs to their new pages (301). An old URL that only
+  adds a slash, such as `/about/`, needs no line: SvelteKit redirects it (308).
+
 ## Forms
 
 A form posts to the action in its page's `+page.server.ts`. The action checks the fields with a zod

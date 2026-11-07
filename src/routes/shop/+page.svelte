@@ -1,7 +1,3 @@
-<svelte:head>
-	<title>Shop · Guzzling Goat</title>
-</svelte:head>
-
 <section class="band">
 	<div class="wrap split product">
 		<img
