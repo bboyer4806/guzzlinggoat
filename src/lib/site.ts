@@ -9,8 +9,8 @@ export function siteUrl(path: string) {
 }
 
 /**
- * Whether a URL, such as a request's or the page's, is on guzzlinggoat.com, rather than the dev site
- * or any other host.
+ * Whether a URL, such as a request's or the page's, is on guzzlinggoat.com, rather than any other
+ * host.
  */
 export function onSiteHost(url: Pick<URL, 'hostname'>) {
 	return url.hostname === HOST;

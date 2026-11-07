@@ -19,11 +19,10 @@
 		{ href: '/wholesale', label: 'Wholesale' }
 	];
 
-	// The site's pages take their head tags from src/lib/site.ts. The design pages set their own
-	// titles.
+	// The site's pages take their head tags from src/lib/site.ts.
 	const current = $derived(PAGES.find(({ path }) => path === page.url.pathname));
 
-	// Google Analytics counts visits to guzzlinggoat.com only, not to the dev site or test runs
+	// Google Analytics counts visits to guzzlinggoat.com only, not test runs or local development
 	// (GGW-11). The tag starts before any page's code runs, so a page can send an event as it loads.
 	const analytics = onSiteHost(page.url);
 	if (browser && analytics) startAnalytics();

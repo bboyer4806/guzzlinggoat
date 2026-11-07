@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-// The About page (GGW-5), built from the approved /design/about mockup. layout.e2e.ts checks that it
+// The About page (GGW-5), built from GGW-2's approved mockup. layout.e2e.ts checks that it
 // doesn't scroll sideways at 375, 768 and 1280px, as it does for every page.
 
 // The About copy from the WordPress site, with its typos fixed, which the page keeps word for word.

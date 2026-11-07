@@ -1,6 +1,6 @@
 // Google Analytics through the Google tag, carried over from the WordPress site's Site Kit setup
-// (GGW-11). The layout loads the tag on guzzlinggoat.com only, so visits to the dev site and test
-// runs don't count.
+// (GGW-11). The layout loads the tag on guzzlinggoat.com only, so test runs and local development
+// don't count.
 
 /** The Google tag that Site Kit set up for the WordPress site. */
 export const GOOGLE_TAG_ID = 'GT-P8QDNSQT';
@@ -28,7 +28,7 @@ export function startAnalytics() {
 	window.gtag('config', GOOGLE_TAG_ID);
 }
 
-/** Sends an event to Google Analytics. Does nothing where the tag isn't loaded, such as the dev site. */
+/** Sends an event to Google Analytics. Does nothing where the tag isn't loaded, such as localhost. */
 export function sendEvent(name: AnalyticsEvent) {
 	window.gtag?.('event', name);
 }

@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { analyticsEvents, emailsFrom, gotoOnSite, uniqueEmail } from './helpers';
 
-// The Wholesale page (GGW-7): the approved /design/wholesale mockup, with an inquiry form that
+// The Wholesale page (GGW-7): GGW-2's approved mockup, with an inquiry form that
 // emails through GGW-9's path, which playwright.config.ts points at the Resend stub.
 
 const COPY = [
