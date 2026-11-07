@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-// The Home page (GGW-4), built from the approved /design/home mockup. layout.e2e.ts checks that it
+// The Home page (GGW-4), built from GGW-2's approved mockup. layout.e2e.ts checks that it
 // doesn't scroll sideways at 375, 768 and 1280px, as it does for every page.
 
 const HEADINGS = [

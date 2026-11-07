@@ -3,7 +3,11 @@ import { SITE_HOST } from './helpers';
 
 // What search engines and link previews see (GGW-10): each page's head tags, the sitemap and
 // robots.txt, noindex everywhere but guzzlinggoat.com, and redirects from the old WordPress URLs.
-// Also the tag that verifies the site in Google Search Console (GGW-11).
+// Also the tag that verifies the site in Google Search Console (GGW-11), and the redirect from
+// www.guzzlinggoat.com and the removed design mockups (GGW-12).
+
+/** The site's address with www, which vite.config.ts lets the tests' server answer to. */
+const WWW_HOST = 'www.guzzlinggoat.com';
 
 const PAGES = [
 	{
@@ -36,15 +40,6 @@ const PAGES = [
 		description:
 			"Questions or suggestions about Guzzling Goat Coffee? Send us a message and we'll be in touch soon."
 	}
-];
-
-const DESIGN_PAGES = [
-	'/design',
-	'/design/home',
-	'/design/about',
-	'/design/shop',
-	'/design/wholesale',
-	'/design/contact'
 ];
 
 /** Old WordPress URLs and where each now goes. */
@@ -134,11 +129,21 @@ for (const { path } of PAGES) {
 	});
 }
 
-for (const path of DESIGN_PAGES) {
-	test(`${path} sends noindex, even on guzzlinggoat.com`, async ({ request }) => {
-		const response = await request.get(path, { headers: { host: SITE_HOST } });
-		expect(response.status()).toBe(200);
-		expect(response.headers()['x-robots-tag']).toBe('noindex');
+for (const path of ['/design', '/design/home']) {
+	test(`the design mockup ${path} is gone (404)`, async ({ request }) => {
+		const response = await request.get(path);
+		expect(response.status()).toBe(404);
+	});
+}
+
+// Any path: a page, an old WordPress URL, a page that doesn't exist, and one with a query string.
+for (const path of ['/', '/wholesale', '/cart/', '/no-such-page', '/shop?utm_source=newsletter']) {
+	test(`on www.guzzlinggoat.com, ${path} redirects (301) to the same address on guzzlinggoat.com`, async ({
+		request
+	}) => {
+		const response = await request.get(path, { headers: { host: WWW_HOST }, maxRedirects: 0 });
+		expect(response.status()).toBe(301);
+		expect(response.headers()['location']).toBe(`https://guzzlinggoat.com${path}`);
 	});
 }
 

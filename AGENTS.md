@@ -1,8 +1,8 @@
 # Guzzling Goat
 
 The Guzzling Goat website, a SvelteKit 3 app (Svelte 5, TypeScript) with no database. It runs at
-https://guzzlinggoat.dev.boyersoftware.com and will replace the WordPress site at
-guzzlinggoat.com, which this repo doesn't touch.
+https://guzzlinggoat.com, where it replaced the WordPress site, and www.guzzlinggoat.com redirects
+there.
 
 ## Development
 
@@ -41,8 +41,6 @@ to an existing compatible Chromium (see `playwright.config.ts`).
   each running edge to edge, with its content in a `wrap`.
 - The fonts are self-hosted: `src/routes/+layout.svelte` imports their `@fontsource-variable`
   packages.
-- `/design` shows the palette and type and links to a mockup of each page, all under
-  `src/routes/design/`. The nav doesn't link to it.
 - Static files, such as the logo, go in `static/`. `src/app.html` links the favicon and
   apple-touch-icon, both made from the logo badge.
 - Site photos are in `static/photos/`: WebP, at most 1600 px wide and under 300 KB, named by number
@@ -55,16 +53,17 @@ to an existing compatible Chromium (see `playwright.config.ts`).
 
 ## Search engines
 
-Only guzzlinggoat.com, where the site will move (GGW-12), is indexed.
+Only guzzlinggoat.com is indexed.
 
 - `src/lib/site.ts` holds each page's path, title and description. `src/routes/+layout.svelte`
   gives the page its title, description, canonical link and link preview (`og:*`, with photo 25)
   from there, and `/sitemap.xml` lists those pages, all at their guzzlinggoat.com addresses. A new
-  page adds a line there instead of setting its own title. The `/design` pages set their own.
-- On any host but guzzlinggoat.com, such as the dev site, `/robots.txt` disallows everything and
-  `src/hooks.server.ts` sends `X-Robots-Tag: noindex`, which it also sends on `/design` on every
-  host. Both check the request's host with `onSiteHost` from `src/lib/site.ts`. Tests ask for
-  guzzlinggoat.com with a `Host` header, which `vite.config.ts` lets the preview server answer.
+  page adds a line there instead of setting its own title.
+- On any host but guzzlinggoat.com, such as localhost, `/robots.txt` disallows everything and
+  `src/hooks.server.ts` sends `X-Robots-Tag: noindex`. Both check the request's host with
+  `onSiteHost` from `src/lib/site.ts`. Tests ask for guzzlinggoat.com and www.guzzlinggoat.com with
+  a `Host` header, which `vite.config.ts` lets the preview server answer.
+- `src/hooks.server.ts` redirects www.guzzlinggoat.com to the same path on guzzlinggoat.com (301).
 - `src/hooks.server.ts` redirects old WordPress URLs to their new pages (301). An old URL that only
   adds a slash, such as `/about/`, needs no line: SvelteKit redirects it (308).
 - `src/routes/+layout.svelte` has Google Search Console's `google-site-verification` meta tag, on
@@ -76,7 +75,7 @@ Google Analytics runs through the Google tag `GT-P8QDNSQT`, carried over from th
 Site Kit setup.
 
 - `src/routes/+layout.svelte` loads and starts the tag on guzzlinggoat.com only, by `onSiteHost`, so
-  visits to the dev site and test runs don't count.
+  test runs and local development don't count.
 - Pages send events with `sendEvent` from `src/lib/analytics.ts`, which does nothing where the tag
   isn't loaded: `amazon_click` when Buy on `/shop` is clicked, and `wholesale_inquiry` and
   `contact_message` when those forms send. A new event adds its name to the type there.
