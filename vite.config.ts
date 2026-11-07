@@ -11,15 +11,28 @@ export default defineConfig({
 					filename.split(/[/\\]/).includes('node_modules') ? undefined : true
 			},
 			adapter: adapter(),
+			// The Google hosts are the ones Google lists for Google Analytics, which the Google tag loads
+			// from and sends to on guzzlinggoat.com (GGW-11):
+			// https://developers.google.com/tag-platform/security/guides/csp
 			csp: {
 				mode: 'auto',
 				directives: {
 					'default-src': ['self'],
-					'script-src': ['self'],
+					'script-src': ['self', 'https://*.googletagmanager.com'],
 					'style-src': ['self', 'unsafe-inline'],
-					'img-src': ['self', 'data:'],
+					'img-src': [
+						'self',
+						'data:',
+						'https://*.google-analytics.com',
+						'https://*.googletagmanager.com'
+					],
 					'font-src': ['self'],
-					'connect-src': ['self'],
+					'connect-src': [
+						'self',
+						'https://*.google-analytics.com',
+						'https://*.analytics.google.com',
+						'https://*.googletagmanager.com'
+					],
 					'form-action': ['self'],
 					'frame-ancestors': ['none'],
 					'base-uri': ['self'],

@@ -67,6 +67,24 @@ Only guzzlinggoat.com, where the site will move (GGW-12), is indexed.
   guzzlinggoat.com with a `Host` header, which `vite.config.ts` lets the preview server answer.
 - `src/hooks.server.ts` redirects old WordPress URLs to their new pages (301). An old URL that only
   adds a slash, such as `/about/`, needs no line: SvelteKit redirects it (308).
+- `src/routes/+layout.svelte` has Google Search Console's `google-site-verification` meta tag, on
+  every host.
+
+## Analytics
+
+Google Analytics runs through the Google tag `GT-P8QDNSQT`, carried over from the WordPress site's
+Site Kit setup.
+
+- `src/routes/+layout.svelte` loads and starts the tag on guzzlinggoat.com only, by `onSiteHost`, so
+  visits to the dev site and test runs don't count.
+- Pages send events with `sendEvent` from `src/lib/analytics.ts`, which does nothing where the tag
+  isn't loaded: `amazon_click` when Buy on `/shop` is clicked, and `wholesale_inquiry` and
+  `contact_message` when those forms send. A new event adds its name to the type there.
+- The Content Security Policy in `vite.config.ts` allows the Google hosts the tag loads from and
+  sends to.
+- Tests open a page as guzzlinggoat.com with `gotoOnSite` from `tests/e2e/helpers.ts`, which answers
+  the tag's script with an empty one, so nothing reaches Google. They read what the page gave the
+  tag with `tagCommands` and `analyticsEvents`.
 
 ## Forms
 

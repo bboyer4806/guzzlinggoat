@@ -1,10 +1,16 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { sendEvent } from '#lib/analytics.ts';
 	import Field from '#lib/Field.svelte';
 	import { focusFirstError } from '#lib/focusFirstError.ts';
 	import Honeypot from '#lib/Honeypot.svelte';
 
 	let { form } = $props();
+
+	// Google Analytics counts each inquiry that sends (GGW-11).
+	$effect(() => {
+		if (form?.sent) sendEvent('wholesale_inquiry');
+	});
 </script>
 
 <section class="band espresso">

@@ -1,3 +1,7 @@
+<script lang="ts">
+	import { sendEvent } from '#lib/analytics.ts';
+</script>
+
 <section class="band">
 	<div class="wrap split product">
 		<img
@@ -28,7 +32,8 @@
 			<a
 				class="button buy"
 				href="https://www.amazon.com/Guzzling-Goat-Ethiopian-Coffee-Flavorful/dp/B0FBBL6K55/?maas=maas_adg_22B6465B489CF19BB0B02DBC2920D706_afap_abs&ref_=aa_maas&tag=maas"
-				target="_blank">Buy on Amazon</a
+				target="_blank"
+				onclick={() => sendEvent('amazon_click')}>Buy on Amazon</a
 			>
 			<p class="note">Buying for a business? <a href="/wholesale">Ask about wholesale</a></p>
 		</div>

@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { emailsFrom, uniqueEmail } from './helpers';
+import { analyticsEvents, emailsFrom, gotoOnSite, uniqueEmail } from './helpers';
 
 // The Contact page (GGW-8): the approved /design/contact mockup, with a form that emails through
 // GGW-9's path, which playwright.config.ts points at the Resend stub. layout.e2e.ts checks that it
@@ -131,6 +131,22 @@ test("when the email doesn't send, the page says so and keeps what the visitor t
 	for (const [label, value] of Object.entries(fields)) {
 		await expect(field(page, label)).toHaveValue(value);
 	}
+});
+
+test('only a message that sends counts in Google Analytics, as contact_message (GGW-11)', async ({
+	page
+}) => {
+	await gotoOnSite(page, '/contact');
+	await send(page, contact('rejected.example.com'));
+	await expect(field(page, 'Email')).toHaveAccessibleDescription(INVALID_EMAIL);
+	// The stub refuses email that replies to this address.
+	await send(page, { Email: 'rejected@example.com' });
+	await expect(page.getByRole('alert')).toHaveText(NOT_SENT);
+	expect(await analyticsEvents(page)).toEqual([]);
+
+	await send(page, { Email: uniqueEmail() });
+	await expect(page.getByRole('status')).toHaveText(THANKS);
+	expect(await analyticsEvents(page)).toEqual(['contact_message']);
 });
 
 // A visitor who sends the form before the page's JavaScript loads gets a new page from the server,

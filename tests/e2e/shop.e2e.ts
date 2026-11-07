@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { analyticsEvents, gotoOnSite } from './helpers';
 
 // The Shop page (GGW-6): one product, bought on Amazon. layout.e2e.ts checks that the page has no
 // sideways scroll at 375, 768 and 1280px.
@@ -42,6 +43,15 @@ test('the Buy button opens the tagged Amazon URL in a new tab', async ({ page })
 	const buy = page.getByRole('link', { name: 'Buy on Amazon' });
 	await expect(buy).toHaveAttribute('href', AMAZON_URL);
 	await expect(buy).toHaveAttribute('target', '_blank');
+});
+
+test('clicking Buy sends Google Analytics an amazon_click event (GGW-11)', async ({ page }) => {
+	// Amazon gets nothing, so the click isn't counted there: the new tab comes back empty.
+	await page.context().route('https://www.amazon.com/**', (route) => route.fulfill({ body: '' }));
+	await gotoOnSite(page, '/shop');
+	expect(await analyticsEvents(page)).toEqual([]);
+	await page.getByRole('link', { name: 'Buy on Amazon' }).click();
+	expect(await analyticsEvents(page)).toEqual(['amazon_click']);
 });
 
 test('/shop links bulk buyers to /wholesale', async ({ page }) => {
