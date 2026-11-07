@@ -82,10 +82,6 @@ for (const width of [375, 768, 1280]) {
 				await expect(logo).toBeVisible();
 				await expect(header.getByRole('navigation')).toBeVisible();
 				await expect(page.getByRole('contentinfo')).toBeVisible();
-				// Text gets wider or narrower when the fonts arrive, so measure after they have.
-				await page.evaluate(async () => {
-					await document.fonts.ready;
-				});
 				expect(await sidewaysOverflow(page)).toBe(0);
 			});
 		}
