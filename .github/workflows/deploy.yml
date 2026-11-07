@@ -1,7 +1,7 @@
 name: Deploy
 
 # Checks the code, then builds on GitHub's runners, pushes the image to GHCR,
-# and has Dokku on the server run it. The Dokku app, its domain and its HTTPS
+# and has Dokku on the server run it. The Dokku app, its domains and its HTTPS
 # certificate are set up here too. The server limits which Dokku commands the
 # deploy key may run, so the app's ports are set once on the server instead
 # (`dokku ports:set guzzlinggoat http:80:3000 https:443:3000`). Only main
@@ -26,7 +26,10 @@ concurrency:
 
 env:
   APP: guzzlinggoat
-  DOMAIN: guzzlinggoat.dev.boyersoftware.com
+  # The site's address, and the one with www, which the app redirects to it
+  # (src/hooks.server.ts). Dokku redirects HTTP to HTTPS on both.
+  DOMAIN: guzzlinggoat.com
+  WWW_DOMAIN: www.guzzlinggoat.com
 
 jobs:
   check:
@@ -114,7 +117,7 @@ jobs:
           dokku() { ssh -i ~/.ssh/id_ed25519 "dokku@$HOST" "$@"; }
 
           dokku apps:exists "$APP" || dokku apps:create "$APP"
-          dokku domains:set "$APP" "$DOMAIN"
+          dokku domains:set "$APP" "$DOMAIN" "$WWW_DOMAIN"
 
           # Re-running a workflow deploys the same image again, which Dokku
           # reports as "No changes detected" with a non-zero exit. Nothing
@@ -127,11 +130,18 @@ jobs:
             echo "::warning::Dokku already had this image, so nothing was redeployed. If the site isn't running it, run 'dokku ps:rebuild $APP' on the server."
           fi
 
-          # Needs the DNS record in place. Checked first so a deploy never
-          # requests a certificate the app already has.
-          if [ "$(dokku letsencrypt:active "$APP")" != "true" ]; then
-            dokku letsencrypt:enable "$APP"
-          fi
+          # Needs the DNS records in place. A certificate is requested only when
+          # a domain doesn't serve a valid one, such as a new app's or a domain
+          # domains:set just added: Let's Encrypt issues only 5 a week for the
+          # same domains, and before dokku-letsencrypt 0.25.0, letsencrypt:enable
+          # requests one every time. letsencrypt:active can't tell, since it
+          # doesn't check that the certificate covers every domain.
+          for domain in "$DOMAIN" "$WWW_DOMAIN"; do
+            if ! curl -sS -o /dev/null "https://$domain/healthz"; then
+              dokku letsencrypt:enable "$APP"
+              break
+            fi
+          done
 
           # The site must answer over HTTPS. A missing port map or a broken
           # proxy can leave a deploy that otherwise looks fine.

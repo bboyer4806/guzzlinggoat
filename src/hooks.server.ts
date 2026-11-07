@@ -1,6 +1,6 @@
 import { building, dev } from '$app/env';
 import { resendConfig } from '#lib/server/email.ts';
-import { onSiteHost } from '#lib/site.ts';
+import { onSiteHost, siteUrl } from '#lib/site.ts';
 import { redirect } from '@sveltejs/kit';
 import type { Handle, ServerInit } from '@sveltejs/kit/hooks';
 
@@ -9,6 +9,13 @@ import type { Handle, ServerInit } from '@sveltejs/kit/hooks';
 export const init: ServerInit = () => {
 	if (!dev && !building) resendConfig();
 };
+
+/**
+ * The site's address with www, which redirects to the same path on guzzlinggoat.com (GGW-12). The
+ * server sends static files before this hook runs, so they don't redirect, and SvelteKit first
+ * removes a page URL's trailing slash, as it does on every host.
+ */
+const WWW_HOST = 'www.guzzlinggoat.com';
 
 /**
  * Old WordPress URLs and the pages that replace them (GGW-10). An old URL of a page the site still
@@ -29,13 +36,16 @@ const OLD_URLS: Record<string, string> = {
 };
 
 export const handle: Handle = async ({ event, resolve }) => {
-	const target = OLD_URLS[event.url.pathname];
+	const { hostname, pathname, search } = event.url;
+	if (hostname === WWW_HOST) {
+		redirect(301, siteUrl(pathname + search), { external: [siteUrl('/')] });
+	}
+
+	const target = OLD_URLS[pathname];
 	if (target) redirect(301, target);
 
 	const response = await resolve(event);
-	// Search engines index guzzlinggoat.com only, and never the design mockups under /design.
-	if (!onSiteHost(event.url) || /^\/design(\/|$)/.test(event.url.pathname)) {
-		response.headers.set('x-robots-tag', 'noindex');
-	}
+	// Search engines index guzzlinggoat.com only.
+	if (!onSiteHost(event.url)) response.headers.set('x-robots-tag', 'noindex');
 	return response;
 };

@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { analyticsEvents, emailsFrom, gotoOnSite, uniqueEmail } from './helpers';
 
-// The Contact page (GGW-8): the approved /design/contact mockup, with a form that emails through
+// The Contact page (GGW-8): GGW-2's approved mockup, with a form that emails through
 // GGW-9's path, which playwright.config.ts points at the Resend stub. layout.e2e.ts checks that it
 // doesn't scroll sideways at 375, 768 and 1280px, as it does for every page.
 
