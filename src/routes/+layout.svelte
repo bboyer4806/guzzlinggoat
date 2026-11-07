@@ -2,9 +2,11 @@
 	import '@fontsource-variable/rokkitt';
 	import '@fontsource-variable/source-sans-3';
 	import '../app.css';
+	import { browser } from '$app/env';
 	import { page } from '$app/state';
+	import { GOOGLE_TAG_ID, startAnalytics } from '#lib/analytics.ts';
 	import Pattern from '#lib/Pattern.svelte';
-	import { PAGES, SHARE_IMAGE, siteUrl } from '#lib/site.ts';
+	import { onSiteHost, PAGES, SHARE_IMAGE, siteUrl } from '#lib/site.ts';
 
 	let { children } = $props();
 
@@ -20,9 +22,19 @@
 	// The site's pages take their head tags from src/lib/site.ts. The design pages set their own
 	// titles.
 	const current = $derived(PAGES.find(({ path }) => path === page.url.pathname));
+
+	// Google Analytics counts visits to guzzlinggoat.com only, not to the dev site or test runs
+	// (GGW-11). The tag starts before any page's code runs, so a page can send an event as it loads.
+	const analytics = onSiteHost(page.url);
+	if (browser && analytics) startAnalytics();
 </script>
 
 <svelte:head>
+	<!-- Verifies guzzlinggoat.com in Google Search Console (GGW-11). It does no harm on other hosts. -->
+	<meta name="google-site-verification" content="STLk8opVWnLcUvyd6I9dGfWHBsf3cCIVS8uDzXmQbog" />
+	{#if analytics}
+		<script async src="https://www.googletagmanager.com/gtag/js?id={GOOGLE_TAG_ID}"></script>
+	{/if}
 	{#if current}
 		<title>{current.title}</title>
 		<meta name="description" content={current.description} />

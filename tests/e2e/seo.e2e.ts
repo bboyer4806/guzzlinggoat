@@ -1,10 +1,9 @@
 import { expect, test } from '@playwright/test';
+import { SITE_HOST } from './helpers';
 
 // What search engines and link previews see (GGW-10): each page's head tags, the sitemap and
 // robots.txt, noindex everywhere but guzzlinggoat.com, and redirects from the old WordPress URLs.
-
-/** The only host search engines may index. vite.config.ts lets the tests' server answer to it. */
-const SITE_HOST = 'guzzlinggoat.com';
+// Also the tag that verifies the site in Google Search Console (GGW-11).
 
 const PAGES = [
 	{
@@ -83,6 +82,16 @@ for (const { path, title, description } of PAGES) {
 		await expect(head.locator('meta[property="og:image"]')).toHaveAttribute(
 			'content',
 			'https://guzzlinggoat.com/photos/25-bag-on-burlap.webp'
+		);
+	});
+}
+
+for (const { path } of PAGES) {
+	test(`${path} has the Google Search Console verification tag`, async ({ page }) => {
+		await page.goto(path);
+		await expect(page.locator('head meta[name="google-site-verification"]')).toHaveAttribute(
+			'content',
+			'STLk8opVWnLcUvyd6I9dGfWHBsf3cCIVS8uDzXmQbog'
 		);
 	});
 }
